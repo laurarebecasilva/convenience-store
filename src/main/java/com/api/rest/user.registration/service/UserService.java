@@ -2,6 +2,7 @@ package com.api.rest.user.registration.service;
 
 import com.api.rest.user.registration.dto.UserDto;
 import com.api.rest.user.registration.dto.UserListingDto;
+import com.api.rest.user.registration.dto.UserUpdateDto;
 import com.api.rest.user.registration.model.User;
 import com.api.rest.user.registration.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,5 +28,18 @@ public class UserService {
                 .stream()
                 .map(UserListingDto::new)
                 .collect(Collectors.toList()); //retorna a lista de usuários que foi convertida por meio do stream, agora lista os dados sem comprometer os dados sensiveis.
+    }
+
+    @Transactional
+    public User updateUser(Long id, UserUpdateDto userUpdateDto) {
+        User user = userRepository.getReferenceById(id);
+        user.updateData(userUpdateDto);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = userRepository.getReferenceById(id);
+        userRepository.delete(user);
     }
 }
