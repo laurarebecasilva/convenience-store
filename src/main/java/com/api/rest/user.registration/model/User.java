@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @Table(name = "users")
 @Entity(name = "User")
 @Getter
@@ -25,16 +26,20 @@ public class User {
     private String username;
 
     @Column(unique = true)
-    @Pattern(regexp = "\\d{8}")
+    @Pattern(regexp = "^[0-9]{8}")
     private String password;
 
     @Column(unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public User(UserDto data) {
         this.username = data.username();
         this.password = data.password();
         this.email = data.email();
+        this.status = Status.ACTIVE;
     }
 
     public void updateData(UserUpdateDto userUpdateDto) {
@@ -44,5 +49,9 @@ public class User {
         if (userUpdateDto.password() != null) {
             this.password = userUpdateDto.password();
         }
+    }
+
+    public void setStatus(Status status) { //setter status
+        this.status = status;
     }
 }
