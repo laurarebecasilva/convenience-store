@@ -1,0 +1,9 @@
+CREATE TABLE sales (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    date_sale TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    total_value DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(20) NOT NULL,
+    quantity INTEGER(10) NOT NULL,
+    description VARCHAR(100) NOT NULL
+);
+
