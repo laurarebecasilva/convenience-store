@@ -1,7 +1,8 @@
-package com.api.rest.user.registration.model;
+package com.api.rest.conveniencestore.model;
 
-import com.api.rest.user.registration.dto.UserDto;
-import com.api.rest.user.registration.dto.UserUpdateDto;
+import com.api.rest.conveniencestore.dto.UserDto;
+import com.api.rest.conveniencestore.dto.UserUpdateDto;
+import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -42,9 +43,10 @@ public class User {
         this.status = Status.ACTIVE;
     }
 
+    //atualiza os valores dos campos apos validar se o campo esta nulo
     public void updateData(UserUpdateDto userUpdateDto) {
         if (userUpdateDto.username() != null) {
-            this.username = userUpdateDto.username(); //se o retorno do put vier preenchido (nao nulo), username pode ser atualizado.
+            this.username = userUpdateDto.username();  //se o retorno do put vier preenchido (nao nulo), username pode ser atualizado.
         }
         if (userUpdateDto.password() != null) {
             this.password = userUpdateDto.password();

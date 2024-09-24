@@ -1,4 +1,4 @@
-package com.api.rest.user.registration.dto;
+package com.api.rest.conveniencestore.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

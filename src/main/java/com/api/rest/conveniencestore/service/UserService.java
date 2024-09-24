@@ -1,11 +1,11 @@
-package com.api.rest.user.registration.service;
+package com.api.rest.conveniencestore.service;
 
-import com.api.rest.user.registration.dto.UserDto;
-import com.api.rest.user.registration.dto.UserListingDto;
-import com.api.rest.user.registration.dto.UserUpdateDto;
-import com.api.rest.user.registration.model.Status;
-import com.api.rest.user.registration.model.User;
-import com.api.rest.user.registration.repository.UserRepository;
+import com.api.rest.conveniencestore.dto.UserDto;
+import com.api.rest.conveniencestore.dto.UserListingDto;
+import com.api.rest.conveniencestore.dto.UserUpdateDto;
+import com.api.rest.conveniencestore.enums.Status;
+import com.api.rest.conveniencestore.model.User;
+import com.api.rest.conveniencestore.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    //lista usuarios ativos
     public List<UserListingDto> listUsers() {
         return userRepository.findByStatus(Status.ACTIVE)
                 .stream()
@@ -44,6 +45,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    //atraves deste metodo, eu consigo inativar o usuario ativo, sem precisar exclui-lo.
     @Transactional
     public void statusUserInactive(Long id, Status status) {
         User user = userRepository.getReferenceById(id);
