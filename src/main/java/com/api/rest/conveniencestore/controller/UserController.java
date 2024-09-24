@@ -1,11 +1,11 @@
-package com.api.rest.user.registration.controller;
+package com.api.rest.conveniencestore.controller;
 
-import com.api.rest.user.registration.dto.UserDto;
-import com.api.rest.user.registration.dto.UserListingDto;
-import com.api.rest.user.registration.dto.UserUpdateDto;
-import com.api.rest.user.registration.model.Status;
-import com.api.rest.user.registration.service.UserService;
-import com.api.rest.user.registration.model.User;
+import com.api.rest.conveniencestore.dto.UserDto;
+import com.api.rest.conveniencestore.dto.UserListingDto;
+import com.api.rest.conveniencestore.model.User;
+import com.api.rest.conveniencestore.service.UserService;
+import com.api.rest.conveniencestore.dto.UserUpdateDto;
+import com.api.rest.conveniencestore.enums.Status;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,9 @@ public class UserController {
     }
 
     @GetMapping // leitura usuarios cadastrados
-    public List<UserListingDto> list() {
-        return userService.listUsers();
+    public ResponseEntity<List<UserListingDto>> list() {
+        var returnList = userService.listUsers();
+        return ResponseEntity.ok(returnList);
     }
 
     @PutMapping("/{id}")
