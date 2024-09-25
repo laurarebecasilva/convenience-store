@@ -2,6 +2,7 @@ package com.api.rest.conveniencestore.model;
 
 import com.api.rest.conveniencestore.dto.SaleDto;
 import com.api.rest.conveniencestore.enums.PaymentMethod;
+import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sale {
+public class Sale implements StatusUtil{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +36,9 @@ public class Sale {
     @Column(nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     //atualiza os valores dos campos apos validar se o campo esta nulo
     public Sale(SaleDto saleDto, double totalValue, String description, int quantity) {
         this.dateSale = LocalDateTime.now();
@@ -42,5 +46,10 @@ public class Sale {
         this.paymentMethod = saleDto.paymentMethod();
         this.quantity = quantity;
         this.description = description;
+        this.status = Status.APPROVED;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
