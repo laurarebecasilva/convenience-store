@@ -8,7 +8,7 @@ public enum PaymentMethod {
     DEBIT;
 
     @JsonCreator
-    public static PaymentMethod fromValue(String value) { //converte uma string que vem do json para uma enum
+    public static PaymentMethod fromValuePaymentMethod (String value) { //converte uma string que vem do json para uma enum
         return PaymentMethod.valueOf(value.toUpperCase());
     }
 }
