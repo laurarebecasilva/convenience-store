@@ -3,6 +3,7 @@ package com.api.rest.conveniencestore.model;
 import com.api.rest.conveniencestore.dto.ProductDto;
 import com.api.rest.conveniencestore.dto.ProductUpdateDto;
 import com.api.rest.conveniencestore.enums.Category;
+import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements StatusUtil{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +37,16 @@ public class Product {
 
     private LocalDate expirationDate;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public Product(ProductDto data) { //construtor
         this.name = data.name();
         this.category = data.category();
         this.price = data.price();
         this.stockQuantity = data.stockQuantity();
         this.expirationDate = data.expirationDate();
+        this.status = Status.REGISTERED;
     }
 
     //atualiza os valores dos campos apos validar se o campo esta nulo
@@ -57,7 +62,7 @@ public class Product {
         }
     }
 
-    //public void setCategory(Category category) { //setter status
-    //this.category = category;
-    //}
+    public void setStatus(Status status) { //setter status
+        this.status = status;
+    }
 }
