@@ -3,7 +3,9 @@ package com.api.rest.conveniencestore.service;
 import com.api.rest.conveniencestore.dto.ProductDto;
 import com.api.rest.conveniencestore.dto.ProductListingDto;
 import com.api.rest.conveniencestore.dto.ProductUpdateDto;
+import com.api.rest.conveniencestore.enums.Status;
 import com.api.rest.conveniencestore.model.Product;
+import com.api.rest.conveniencestore.model.User;
 import com.api.rest.conveniencestore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,14 @@ public class ProductService {
         Product product = productRepository.getReferenceById(id);
         product.productUpdateData(updateDto);
         return productRepository.save(product);
+    }
+
+    //atraves deste metodo, eu consigo inativar o produto ativo, sem precisar exclui-lo.
+    @Transactional
+    public void statusProductInactive(Long id, Status status) {
+        Product product = productRepository.getReferenceById(id);
+        product.setStatus(status.INACTIVE);
+        productRepository.save(product);
     }
 }
 
