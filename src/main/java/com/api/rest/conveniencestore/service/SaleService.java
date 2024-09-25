@@ -3,6 +3,7 @@ package com.api.rest.conveniencestore.service;
 import com.api.rest.conveniencestore.dto.SaleDto;
 import com.api.rest.conveniencestore.dto.SaleListingDto;
 import com.api.rest.conveniencestore.enums.PaymentMethod;
+import com.api.rest.conveniencestore.enums.Status;
 import com.api.rest.conveniencestore.model.Product;
 import com.api.rest.conveniencestore.model.Sale;
 import com.api.rest.conveniencestore.repository.ProductRepository;
@@ -58,5 +59,12 @@ Esse loop percorre o ID de produto da lista productIds do saleDto.
                 .stream()
                 .map(SaleListingDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void statusSale(Long id, Status status) {
+        Sale sale = saleRepository.getReferenceById(id);
+        sale.setStatus(status.CANCELLED);
+        saleRepository.save(sale);
     }
 }
