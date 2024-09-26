@@ -4,6 +4,7 @@ import com.api.rest.conveniencestore.dto.SaleDto;
 import com.api.rest.conveniencestore.enums.PaymentMethod;
 import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class Sale implements StatusUtil{
     private LocalDateTime dateSale;
 
     @Column(nullable = false)
+    @NotNull(message = "Total Value cannot be null")
     private double totalValue;
 
     @Column(nullable = false)
