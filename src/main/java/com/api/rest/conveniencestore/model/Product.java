@@ -5,6 +5,9 @@ import com.api.rest.conveniencestore.dto.ProductUpdateDto;
 import com.api.rest.conveniencestore.enums.Category;
 import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +26,7 @@ public class Product implements StatusUtil{
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
     @Column(nullable = false)
@@ -30,9 +34,11 @@ public class Product implements StatusUtil{
     private Category category;
 
     @Column(nullable = false)
+    @NotNull(message = "Price cannot be null")
     private double price;
 
     @Column(nullable = false)
+    @NotNull(message = "Stock Quantity cannot be null")
     private int stockQuantity;
 
     private LocalDate expirationDate;
