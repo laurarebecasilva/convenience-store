@@ -42,10 +42,10 @@ public class ProductService {
 
     //atraves deste metodo, eu consigo inativar o produto ativo, sem precisar exclui-lo.
     @Transactional
-    public void statusProductInactive(Long id, Status status) {
+    public Product statusProductInactive(Long id, Status status) {
         Product product = productRepository.getReferenceById(id);
         product.setStatus(status.INACTIVE);
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 }
 
