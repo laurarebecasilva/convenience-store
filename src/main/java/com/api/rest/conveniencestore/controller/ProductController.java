@@ -26,7 +26,7 @@ public class ProductController {
     @Transactional
     public ResponseEntity<Product> register(@Valid @RequestBody ProductDto productDto) {
         Product savedProduct = productService.registerProduct(productDto);
-        return ResponseEntity.status(200).body(savedProduct);
+        return ResponseEntity.status(201).body(savedProduct);
     }
 
     @GetMapping
@@ -37,18 +37,18 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Product> update(@PathVariable Long id, @Valid @RequestBody ProductUpdateDto updateDto) {
+    public ResponseEntity<Product> update(@Valid @PathVariable Long id, @RequestBody ProductUpdateDto updateDto) {
         Product updatedProduct = productService.updateProduct(id, updateDto);
         return ResponseEntity.status(200).body(updatedProduct);
     }
 
     @PatchMapping("/{id}/status")
     @Transactional
-    public ResponseEntity<Product> status(@PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
+    public ResponseEntity<Product> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
         String statusString = statusRequest.get("status");
         Status statusInactive = Status.fromValueStatus(statusString); // Converte a string para enum
-        productService.statusProductInactive(id, statusInactive);
-        return ResponseEntity.noContent().build();
+        Product updatedStatusProduct = productService.statusProductInactive(id, statusInactive);
+        return ResponseEntity.ok(updatedStatusProduct);
     }
 }
 
