@@ -4,6 +4,8 @@ import com.api.rest.conveniencestore.dto.UserDto;
 import com.api.rest.conveniencestore.dto.UserUpdateDto;
 import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -24,13 +26,17 @@ public class User {
     private Long id;
 
     @Column(unique = true)
+    @NotBlank(message = "Username cannot be blank")
     private String username;
 
-    @Column(unique = true)
-    @Pattern(regexp = "^[0-9]{8}")
+    @Column // Remover unique, se não for necessário
+    @NotBlank(message = "Password cannot be blank")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$", message = "Password must be at least 8 characters long and include both letters and numbers")
     private String password;
 
     @Column(unique = true)
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email must be valid")
     private String email;
 
     @Enumerated(EnumType.STRING)
