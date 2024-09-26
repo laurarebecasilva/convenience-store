@@ -62,9 +62,9 @@ Esse loop percorre o ID de produto da lista productIds do saleDto.
     }
 
     @Transactional
-    public void statusSale(Long id, Status status) {
+    public Sale statusSale(Long id, Status status) {
         Sale sale = saleRepository.getReferenceById(id);
         sale.setStatus(status.CANCELLED);
-        saleRepository.save(sale);
+        return saleRepository.save(sale);
     }
 }

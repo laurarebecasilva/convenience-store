@@ -47,9 +47,10 @@ public class UserService {
 
     //atraves deste metodo, eu consigo inativar o usuario ativo, sem precisar exclui-lo.
     @Transactional
-    public void statusUserInactive(Long id, Status status) {
+    public User statusUserInactive(Long id, Status status) {
         User user = userRepository.getReferenceById(id);
         user.setStatus(status.INACTIVE);
-        userRepository.save(user);
+        return userRepository.save(user);
+
     }
 }
