@@ -1,22 +1,23 @@
 package com.api.rest.conveniencestore.dto;
 
 import com.api.rest.conveniencestore.enums.Category;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public record ProductDto(
-        @NotBlank
+
+        @NotBlank(message = "Product name cannot be blank")
         String name,
 
-        @NotBlank
         Category category,
 
-        @NotNull
+        @NotNull(message = "Price cannot be null")
         double price,
 
-        @NotNull
+        @NotNull(message = "Stock quantity cannot be null")
         int stockQuantity,
 
         LocalDate expirationDate) {
