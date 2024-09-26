@@ -26,7 +26,7 @@ public class UserController {
     @Transactional // transação ativa com o banco de dados: registra usuários
     public ResponseEntity<User> register(@Valid @RequestBody UserDto data) { //O spring se integra com o valid para aplicar as validações dos campos
         User savedUser = userService.registerUser(data);
-        return ResponseEntity.status(200).body(savedUser);
+        return ResponseEntity.status(201).body(savedUser);
     }
 
     @GetMapping // leitura usuarios cadastrados
@@ -37,9 +37,9 @@ public class UserController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDto updateDto){
-        User updateDataSaved = userService.updateUser(id, updateDto);
-        return ResponseEntity.status(200).body(updateDataSaved);
+    public ResponseEntity<User> update(@Valid @PathVariable Long id, @RequestBody UserUpdateDto updateDto){
+        User updateUser = userService.updateUser(id, updateDto);
+        return ResponseEntity.status(200).body(updateUser);
     }
 
     @DeleteMapping("/{id}")
@@ -51,10 +51,10 @@ public class UserController {
 
     @PatchMapping("/{id}/status")
     @Transactional
-    public ResponseEntity<User> status(@PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
+    public ResponseEntity<User> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
         String statusString = statusRequest.get("status");
         Status statusInactive = Status.fromValueStatus(statusString); // Converte a string para enum
-        userService.statusUserInactive(id, statusInactive);
-        return ResponseEntity.noContent().build();
+        User updatedStatusUser = userService.statusUserInactive(id, statusInactive);
+        return ResponseEntity.ok(updatedStatusUser);
     }
 }

@@ -26,11 +26,11 @@ public class SaleController {
     @Transactional
     public ResponseEntity<Sale> register(@Valid @RequestBody SaleDto saleDto) {
         Sale savedSale = saleService.registerSale(saleDto);
-        return ResponseEntity.status(200).body(savedSale);
+        return ResponseEntity.status(201).body(savedSale);
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleListingDto>> listSalesByPaymentMethod(@RequestParam String paymentMethod) {
+    public ResponseEntity<List<SaleListingDto>> listSalesByPaymentMethod(@RequestParam @Valid String paymentMethod) {
         PaymentMethod payment = PaymentMethod.valueOf(paymentMethod.toUpperCase());
         List<SaleListingDto> sales = saleService.listSalesByPaymentMethod(payment);
         return ResponseEntity.ok(sales);
@@ -38,12 +38,11 @@ public class SaleController {
 
     @PatchMapping("/{id}/status")
     @Transactional
-    public ResponseEntity<Sale> status(@PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
+    public ResponseEntity<Sale> status(@PathVariable Long id, @Valid @RequestBody Map<String, String> statusRequest) {
         String statusString = statusRequest.get("status");
         Status statusCanceled = Status.fromValueStatus(statusString); // Converte a string para enum
-        saleService.statusSale(id, statusCanceled);
-        return ResponseEntity.noContent().build();
+        Sale updatedStatusSale = saleService.statusSale(id, statusCanceled);
+        return ResponseEntity.ok(updatedStatusSale);
     }
-
 }
 
