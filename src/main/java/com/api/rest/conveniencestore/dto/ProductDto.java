@@ -1,6 +1,7 @@
 package com.api.rest.conveniencestore.dto;
 
 import com.api.rest.conveniencestore.enums.Category;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
