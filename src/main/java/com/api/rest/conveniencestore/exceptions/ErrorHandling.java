@@ -22,7 +22,6 @@ public class ErrorHandling {
     }
 
     private record ErrorResponse(String field, String message) {
-
         public ErrorResponse(FieldError error) {
             this(error.getField(), error.getDefaultMessage());
         }
