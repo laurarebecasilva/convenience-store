@@ -2,6 +2,7 @@ package com.api.rest.conveniencestore.model;
 
 import com.api.rest.conveniencestore.dto.UserDto;
 import com.api.rest.conveniencestore.dto.UserUpdateDto;
+import com.api.rest.conveniencestore.enums.Roles;
 import com.api.rest.conveniencestore.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,7 +12,11 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.Collections;
 
 @Table(name = "users")
 @Entity(name = "User")
@@ -19,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")//gera um equalshashcode apenas no atributo id
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +34,6 @@ public class User {
     @NotBlank(message = "Username cannot be blank")
     private String username;
 
-    @Column // Remover unique, se não for necessário
     @NotBlank(message = "Password cannot be blank")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$", message = "Password must be at least 8 characters long and include both letters and numbers")
     private String password;
@@ -42,11 +46,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Roles role;
+
     public User(UserDto data) {
         this.username = data.username();
         this.password = data.password();
         this.email = data.email();
         this.status = Status.ACTIVE;
+        this.role = Roles.USER;
     }
 
     //atualiza os valores dos campos apos validar se o campo esta nulo
@@ -61,5 +70,19 @@ public class User {
 
     public void setStatus(Status status) { //setter status
         this.status = status;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Aqui estamos retornando uma simples lista de roles
+        return Collections.singletonList(() -> "ROLE: " + this.role);
     }
 }

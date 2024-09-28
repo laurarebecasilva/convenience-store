@@ -10,7 +10,7 @@ public enum Category {
 
         @JsonCreator
         public static Category fromValueCategory (String value) { //converte uma string que vem do json para uma enum
-                return Category.valueOf(value.toUpperCase());
+            return Category.valueOf(value.toUpperCase());
         }
 }
 

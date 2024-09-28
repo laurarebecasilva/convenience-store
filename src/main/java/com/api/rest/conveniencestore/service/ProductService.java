@@ -5,7 +5,6 @@ import com.api.rest.conveniencestore.dto.ProductListingDto;
 import com.api.rest.conveniencestore.dto.ProductUpdateDto;
 import com.api.rest.conveniencestore.enums.Status;
 import com.api.rest.conveniencestore.model.Product;
-import com.api.rest.conveniencestore.model.User;
 import com.api.rest.conveniencestore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
