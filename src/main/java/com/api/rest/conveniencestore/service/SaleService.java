@@ -83,10 +83,14 @@ public class SaleService {
                 .collect(Collectors.toList());
     }
 
+    /*
     @Transactional
     public Sale statusSale(Long id, Status status) {
         Sale sale = saleRepository.getReferenceById(id);
-        sale.setStatus(status.CANCELLED);
+        if (status != null) {
+            sale.setStatus(status.CANCELLED);
+        }
+
         return saleRepository.save(sale);
     }
     */

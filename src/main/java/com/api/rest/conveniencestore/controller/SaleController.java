@@ -54,14 +54,34 @@ public class SaleController {
         // Retorna a lista de vendas
         return ResponseEntity.ok(sales);
     }
-
+/*
     @PatchMapping("/{id}/status")
     @Transactional
-    public ResponseEntity<Sale> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest) {
+    public ResponseEntity<Sale> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest, SaleService saleService) throws SaleInvalidStatusException, SaleListingNullException {
         String statusString = statusRequest.get("status");
-        Status statusCanceled = Status.fromValueStatus(statusString); // Converte a string para enum
+        Status statusCanceled;
+
+        // Verifica se o status fornecido é válido
+        try {
+            statusCanceled = Status.fromValueStatus(statusString); // Converte a string para o enum Status
+        } catch (IllegalArgumentException e) {
+            throw new SaleInvalidStatusException("Status inválido: " + statusString);
+        }
+
+        // Verifica se o status é INACTIVE
+        if (!Status.CANCELLED.equals(statusCanceled)) {
+            throw new SaleInvalidStatusException("O status só pode ser alterado para CANCELLED.");
+        }
+
+        // Verifica se a venda com o ID fornecido existe
+        if (!saleRepository.existsById(id)) {  // Use o SaleRepository aqui
+            throw new SaleListingNullException("Produto com ID: " + id + " não foi encontrado.");
+        }
+
+        // Altera o status da venda
         Sale updatedStatusSale = saleService.statusSale(id, statusCanceled);
         return ResponseEntity.ok(updatedStatusSale);
     }
+ */
 }
 
