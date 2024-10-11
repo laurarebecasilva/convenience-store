@@ -1,5 +1,7 @@
 package com.api.rest.conveniencestore.dto;
 
+import com.api.rest.conveniencestore.enums.Status;
+
 import java.time.LocalDate;
 
 public record ProductUpdateDto(
@@ -8,5 +10,7 @@ public record ProductUpdateDto(
 
         Integer stockQuantity,
 
-        LocalDate expirationDate) {
+        LocalDate expirationDate,
+
+        Status status) {
 }
