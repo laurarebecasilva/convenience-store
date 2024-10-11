@@ -4,7 +4,7 @@ CREATE TABLE sales (
     total_value DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(20) NOT NULL,
     quantity INTEGER(10) NOT NULL,
-    description VARCHAR(100) NOT NULL,
+    description VARCHAR(10000) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'APPROVED'
 );
 
