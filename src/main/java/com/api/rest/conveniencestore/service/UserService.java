@@ -5,11 +5,11 @@ import com.api.rest.conveniencestore.dto.UserListingDto;
 import com.api.rest.conveniencestore.dto.UserUpdateDto;
 import com.api.rest.conveniencestore.enums.Roles;
 import com.api.rest.conveniencestore.enums.Status;
+import com.api.rest.conveniencestore.exceptions.UserNotFoundException;
+import com.api.rest.conveniencestore.exceptions.UserNotValidPassword;
 import com.api.rest.conveniencestore.model.User;
 import com.api.rest.conveniencestore.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,12 +25,24 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    //private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Transactional
     public User registerUser(UserDto userDto) {
         String encryptedPassword = passwordEncoder.encode(userDto.password()); // Criptografa a senha antes de criar o usuário
-        log.debug("Senha criptografada: " + encryptedPassword);
+        //log.debug("Senha criptografada: " + encryptedPassword);
         User user = new User(userDto);  // Cria o objeto User com a senha já criptografada
         user.setPassword(encryptedPassword);
         return userRepository.save(user); // Salva o usuário no banco de dados
@@ -45,10 +57,11 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long id, UserUpdateDto userUpdateDto) {
-        User user = userRepository.getReferenceById(id);
-        user.updateData(userUpdateDto);
-        return userRepository.save(user);
+    public User updateUser(Long id, UserUpdateDto userUpdateDto) throws UserNotFoundException, UserNotValidPassword {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+        user.updateData(userUpdateDto, passwordEncoder); //atualiza senha e outros dados
+        return userRepository.save(user);  // Salva o usuário atualizado no banco
     }
 
     @Transactional
@@ -61,14 +74,18 @@ public class UserService {
     @Transactional
     public User statusUserInactive(Long id, Status status) {
         User user = userRepository.getReferenceById(id);
-        user.setStatus(status.INACTIVE);
+        if (status != null) {
+            user.setStatus(status.INACTIVE);
+        }
         return userRepository.save(user);
     }
 
     @Transactional
     public User roleUserAdmin(Long id, Roles roles) {
         User user = userRepository.getReferenceById(id);
-        user.setRole(roles.ADMIN);
+        if (roles != null) {
+            user.setRole(roles.ADMIN);
+        }
         return userRepository.save(user);
     }
 }
