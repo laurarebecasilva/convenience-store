@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum Category {
         FUEL,
         FOOD,
-        BEVERAGES,
+        BEVERAGE,
         CLEANING_PRODUCTS;
 
         @JsonCreator
