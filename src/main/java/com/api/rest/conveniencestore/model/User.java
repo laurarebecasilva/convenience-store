@@ -4,16 +4,19 @@ import com.api.rest.conveniencestore.dto.UserDto;
 import com.api.rest.conveniencestore.dto.UserUpdateDto;
 import com.api.rest.conveniencestore.enums.Roles;
 import com.api.rest.conveniencestore.enums.Status;
+
+import com.api.rest.conveniencestore.exceptions.UserNotValidPassword;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +25,6 @@ import java.util.Collections;
 @Entity(name = "User")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(of = "id")//gera um equalshashcode apenas no atributo id
 public class User implements UserDetails {
 
@@ -31,13 +33,17 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true)
-    @NotBlank(message = "Username cannot be blank")
+    //@NotBlank(message = "Username cannot be blank")
+    //@Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$", message = "Password must be at least 8 characters long and include both letters and numbers")
-    private String password;
+    @JsonIgnore
+    @Column(unique = true)
+    @NotBlank(message = "Password cannot be blank") // ^înicio da string, lockhead (?=.*[0-9]) verifica se há pelo menos um digito em toda string
+    //@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$", message = "Password must be at least 8 characters long and include both letters and numbers")
+    private String password; //.* qualquer caractere em qualquer posição. $ fim da string
 
+    @JsonIgnore
     @Column(unique = true)
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Email must be valid")
@@ -48,6 +54,7 @@ public class User implements UserDetails {
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private Roles role;
 
     public User(UserDto data) {
@@ -58,13 +65,23 @@ public class User implements UserDetails {
         this.role = Roles.USER;
     }
 
-    //atualiza os valores dos campos apos validar se o campo esta nulo
-    public void updateData(UserUpdateDto userUpdateDto) {
+    public void updateData(UserUpdateDto userUpdateDto, PasswordEncoder passwordEncoder) throws UserNotValidPassword {
         if (userUpdateDto.username() != null) {
-            this.username = userUpdateDto.username();  //se o retorno do put vier preenchido (nao nulo), username pode ser atualizado.
+            this.username = userUpdateDto.username();
         }
-        if (userUpdateDto.password() != null) {
-            this.password = userUpdateDto.password();
+        if (userUpdateDto.password() != null && !userUpdateDto.password().isBlank()) {
+            validatePassword(userUpdateDto.password());  // Validação centralizada da senha
+            String encryptedPassword = passwordEncoder.encode(userUpdateDto.password());
+            this.password = encryptedPassword;  // Atualiza a senha criptografada.
+        }
+    }
+
+    private void validatePassword(String password) throws UserNotValidPassword {
+        if (password.length() < 8) {
+            throw new UserNotValidPassword("A senha deve ter pelo menos 8 caracteres.");
+        }
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
+            throw new UserNotValidPassword("A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.");
         }
     }
 
@@ -80,9 +97,14 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Aqui estamos retornando uma simples lista de roles
+
         return Collections.singletonList(() -> "ROLE: " + this.role);
     }
+
+
+
+
 }
