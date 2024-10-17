@@ -7,4 +7,3 @@ CREATE TABLE sales (
     description VARCHAR(10000) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'APPROVED'
 );
-

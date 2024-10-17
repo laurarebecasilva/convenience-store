@@ -103,8 +103,4 @@ public class User implements UserDetails {
 
         return Collections.singletonList(() -> "ROLE: " + this.role);
     }
-
-
-
-
 }
