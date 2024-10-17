@@ -24,10 +24,11 @@ public class Product implements StatusUtil{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
+    @NotNull(message = "Category cannot be null")
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -36,7 +37,7 @@ public class Product implements StatusUtil{
     @NotNull(message = "Price cannot be null")
     private double price;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "stock_quantity")
     @NotNull(message = "Stock Quantity cannot be null")
     private int stockQuantity;
 
@@ -65,9 +66,20 @@ public class Product implements StatusUtil{
         if (updateDto.expirationDate() != null) {
             this.expirationDate = updateDto.expirationDate();
         }
+        if (updateDto.status() != null) {
+            this.status = updateDto.status();
+        }
     }
 
     public void setStatus(Status status) { //setter status
         this.status = status;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }

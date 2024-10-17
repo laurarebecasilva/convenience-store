@@ -1,16 +1,26 @@
 package com.api.rest.conveniencestore.dto;
 
 import com.api.rest.conveniencestore.enums.PaymentMethod;
+import com.api.rest.conveniencestore.model.Client;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record SaleDto(
 
+        @Column(name = "id")
         @NotEmpty(message = "Product IDs cannot be empty")
         List<Long> productIds,
 
-        PaymentMethod paymentMethod,
+        @NotEmpty(message = "Quantities cannot be empty")
+        List<Integer> quantity,
 
-        List<String> description) //contem os nomes dos produtos como lista
-{
+        @NotNull(message = "Payment method cannot be null")
+        PaymentMethod paymentMethod
+
+        //Client cpf
+
+) {
 }

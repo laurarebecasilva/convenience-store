@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,14 @@ public class ProductService {
 
     @Autowired // permite que o Spring injete uma instância do ProductRepository
     private ProductRepository productRepository;
+
+    public boolean existsByName(String name) {
+        return productRepository.existsByName(name);
+    }
+
+    public boolean existsById(Long id) {
+        return productRepository.existsById(id);
+    }
 
     @Transactional
     public Product registerProduct(ProductDto productDto) {
@@ -45,6 +54,11 @@ public class ProductService {
         Product product = productRepository.getReferenceById(id);
         product.setStatus(status.INACTIVE);
         return productRepository.save(product);
+    }
+
+    public List<Product> searchExpiredProducts() {
+        LocalDate dateNow = LocalDate.now();
+        return productRepository.findByExpirationDate(dateNow);
     }
 }
 

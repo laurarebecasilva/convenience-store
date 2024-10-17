@@ -27,7 +27,7 @@ public class ConfigurationSecurity {
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Bean para criptografar senhas
+        return new BCryptPasswordEncoder(); // Bean para criptografar senhas - diz ao spring que mascare a senha com o bcript
     }
 
     @Bean

@@ -1,9 +1,9 @@
 package com.api.rest.conveniencestore.controller;
 
 import com.api.rest.conveniencestore.dto.AuthenticationDto;
+import com.api.rest.conveniencestore.exceptions.AutheticationInvalidException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,14 +22,14 @@ public class AuthenticationController {
     private AuthenticationManager manager;
 
     @PostMapping
-    public ResponseEntity login(@Valid @RequestBody AuthenticationDto autDto) {
+    public ResponseEntity<String> login(@Valid @RequestBody AuthenticationDto autDto) throws AutheticationInvalidException {
         var token = new UsernamePasswordAuthenticationToken(autDto.username(), autDto.password());
         try {
             Authentication authentication = manager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return ResponseEntity.ok("Login successful");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Login failed: " + e.getMessage()); // Log para rastrear o erro
+            throw new AutheticationInvalidException("Credenciais: Username ou password invalidos.");
         }
     }
 }

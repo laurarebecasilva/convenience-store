@@ -13,4 +13,6 @@ public enum Status {
     public static Status fromValueStatus(String value) { //converte uma string que vem do json para uma enum
         return Status.valueOf(value.toUpperCase());
     }
+
+
 }

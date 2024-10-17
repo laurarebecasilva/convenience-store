@@ -3,6 +3,7 @@ package com.api.rest.conveniencestore.model;
 import com.api.rest.conveniencestore.dto.SaleDto;
 import com.api.rest.conveniencestore.enums.PaymentMethod;
 import com.api.rest.conveniencestore.enums.Status;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,33 +23,36 @@ public class Sale implements StatusUtil{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dateSale;
-
     @Column(nullable = false)
-    @NotNull(message = "Total Value cannot be null")
-    private double totalValue;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
+    private String description;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
-    private String description;
+    @Column(nullable = false, name = "total_value")
+    @NotNull(message = "Total Value cannot be null")
+    private double totalValue;
+
+    @Column(nullable = false, name = "payment_method")
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    @Column(nullable = false, name = "date_sale")
+    private LocalDateTime saleDate;
+
+
     //atualiza os valores dos campos apos validar se o campo esta nulo
-    public Sale(SaleDto saleDto, double totalValue, String description, int quantity) {
-        this.dateSale = LocalDateTime.now();
+    public Sale(SaleDto saleDto, double totalValue, String description, int quantity, LocalDateTime saleDate) {
+        this.description = description;
+        this.quantity = quantity;
         this.totalValue = totalValue;
         this.paymentMethod = saleDto.paymentMethod();
-        this.quantity = quantity;
-        this.description = description;
         this.status = Status.APPROVED;
+        this.saleDate = LocalDateTime.now();
     }
 
     public void setStatus(Status status) {
