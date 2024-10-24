@@ -13,6 +13,14 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
+    public boolean existsByCpf(String cpf) {
+        return clientRepository.existsById(Long.valueOf(cpf));
+    }
+
+    public boolean existsByName(String name) {
+        return clientRepository.existsByName(name);
+    }
+
     @Transactional
     public Client registerClient(ClientDto clientDto) {
         Client client = new Client(clientDto);
