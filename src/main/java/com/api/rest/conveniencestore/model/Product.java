@@ -4,6 +4,7 @@ import com.api.rest.conveniencestore.dto.ProductDto;
 import com.api.rest.conveniencestore.dto.ProductUpdateDto;
 import com.api.rest.conveniencestore.enums.Category;
 import com.api.rest.conveniencestore.enums.Status;
+import com.api.rest.conveniencestore.utils.StatusUtil;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product implements StatusUtil{
+public class Product implements StatusUtil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +47,7 @@ public class Product implements StatusUtil{
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Product(ProductDto data) { //construtor
+    public Product(ProductDto data) {
         this.name = data.name();
         this.category = data.category();
         this.price = data.price();
@@ -55,7 +56,6 @@ public class Product implements StatusUtil{
         this.status = Status.REGISTERED;
     }
 
-    //atualiza os valores dos campos apos validar se o campo esta nulo
     public void productUpdateData(ProductUpdateDto updateDto) {
         if (updateDto.price() != null) {
             this.price = updateDto.price();
@@ -71,7 +71,7 @@ public class Product implements StatusUtil{
         }
     }
 
-    public void setStatus(Status status) { //setter status
+    public void setStatus(Status status) {
         this.status = status;
     }
 

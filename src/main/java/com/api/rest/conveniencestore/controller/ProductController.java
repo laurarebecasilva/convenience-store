@@ -11,6 +11,7 @@ import com.api.rest.conveniencestore.exceptions.UserRegistrationException;
 import com.api.rest.conveniencestore.model.Product;
 import com.api.rest.conveniencestore.repository.ProductRepository;
 import com.api.rest.conveniencestore.service.ProductService;
+import com.api.rest.conveniencestore.utils.MessageConstants;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class ProductController {
     @Transactional
     public ResponseEntity<Product> register(@Valid @RequestBody ProductDto productDto) throws UserRegistrationException {
         if (productService.existsByName(productDto.name())) {
-            throw new UserRegistrationException("Produto já cadastrado com o nome: " + productDto.name());
+            throw new UserRegistrationException(MessageConstants.PRODUCT_ALREADY_EXISTS + productDto.name());
         }
         Product savedProduct = productService.registerProduct(productDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
@@ -48,7 +49,7 @@ public class ProductController {
     public ResponseEntity<List<ProductListingDto>> list() throws UserListingNullException {
         var returnProducts = productService.listProducts();
         if (returnProducts.isEmpty()) {
-            throw new UserListingNullException("Nenhum produto cadastrado foi encontrado.");
+            throw new UserListingNullException(MessageConstants.NO_PRODUCTS_FOUND);
         }
         return ResponseEntity.ok(returnProducts);
     }
@@ -57,7 +58,7 @@ public class ProductController {
     @Transactional
     public ResponseEntity<Product> update(@PathVariable Long id, @Valid @RequestBody ProductUpdateDto updateDto) throws ProductNotFoundException {
         if (!productService.existsById(id)) {
-            throw new ProductNotFoundException(("Produto com ID: " + id + " não foi encontrado."));
+            throw new ProductNotFoundException((String.format(MessageConstants.PRODUCT_NOT_FOUND, id)));
         }
         Product updatedProduct = productService.updateProduct(id, updateDto);
         return ResponseEntity.ok(updatedProduct);
@@ -69,17 +70,17 @@ public class ProductController {
         String statusString = statusRequest.get("status");
         Status statusInactive;
         try {
-            statusInactive = Status.fromValueStatus(statusString); // Converte a string para enum
+            statusInactive = Status.fromValueStatus(statusString);
         } catch (IllegalArgumentException e) {
-            throw new ProductInvalidStatusException("Status inválido: " + statusString);
+            throw new ProductInvalidStatusException(MessageConstants.INVALID_STATUS + statusString);
         }
 
         if (!Status.INACTIVE.equals(statusInactive)) {
-            throw new ProductInvalidStatusException("O status só pode ser alterado para INACTIVE.");
+            throw new ProductInvalidStatusException(MessageConstants.STATUS_INACTIVE);
         }
 
         if (!productService.existsById(id)) {
-            throw new ProductNotFoundException("Produto com ID: " + id + " não foi encontrado.");
+            throw new ProductNotFoundException(String.format(MessageConstants.PRODUCT_NOT_FOUND, id));
         }
 
         Product updatedStatusProduct = productService.statusProductInactive(id, statusInactive);

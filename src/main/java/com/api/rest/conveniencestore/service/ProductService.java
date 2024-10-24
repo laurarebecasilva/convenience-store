@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    @Autowired // permite que o Spring injete uma instância do ProductRepository
+    @Autowired
     private ProductRepository productRepository;
 
     public boolean existsByName(String name) {
@@ -48,7 +48,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    //atraves deste metodo, eu consigo inativar o produto ativo, sem precisar exclui-lo.
     @Transactional
     public Product statusProductInactive(Long id, Status status) {
         Product product = productRepository.getReferenceById(id);

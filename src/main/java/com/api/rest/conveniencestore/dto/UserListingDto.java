@@ -15,7 +15,7 @@ public record UserListingDto(
 
         Roles role) {
 
-    public UserListingDto(User user) { //construtor
+    public UserListingDto(User user) {
         this(
                 user.getId(),
                 user.getUsername(),
@@ -25,6 +25,3 @@ public record UserListingDto(
         );
     }
 }
-//Com a classe UserListingDto, consigo fitrar os dados que quero exibir,
-// protegendo dados sensiveis como senhas dos usuarios.
-//Poupando tambem, tempo de processamento.

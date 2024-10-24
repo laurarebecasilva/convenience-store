@@ -1,18 +1,17 @@
 package com.api.rest.conveniencestore.model;
 
 import com.api.rest.conveniencestore.dto.ClientDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
+
 
 @Table(name = "Clients")
 @Entity(name = "Client")
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")//gera um equalshashcode apenas no atributo id
+@EqualsAndHashCode(of = "id")
 public class Client {
 
     @Id
@@ -21,8 +20,7 @@ public class Client {
 
     private String name;
 
-    @JsonIgnore
-    @Column(unique = true) // CPF único e obrigatório
+    @Column(unique = true)
     private String cpf;
 
     public Client(ClientDto data) {
@@ -30,7 +28,7 @@ public class Client {
         this.name = data.name();
     }
 
-    public void setCpf(Client client) { //setter
+    public void setCpf(Client client) {
         this.cpf = cpf;
     }
 

@@ -11,14 +11,13 @@ public record ProductListingDto(
         int stockQuantity,
         String expirationDate) {
 
-    public ProductListingDto(Product product) { //construtor
-        this( //cria um ProductListingDto a partir do objeto Product.
+    public ProductListingDto(Product product) {
+        this(
                 product.getId(),
                 product.getName(),
                 product.getCategory(),
                 product.getPrice(),
                 product.getStockQuantity(),
                 product.getExpirationDate() != null ? product.getExpirationDate().toString() : "N/A");
-        //verifica se a data é nula (N/A), se não retorna a data.
     }
 }

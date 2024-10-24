@@ -20,7 +20,7 @@ public record SaleListingDto(
 
         String description
 ) {
-    public SaleListingDto(Sale sale) {//construtor
+    public SaleListingDto(Sale sale) {
         this(
                 sale.getId(),
                 sale.getSaleDate(),
@@ -31,6 +31,3 @@ public record SaleListingDto(
         );
     }
 }
-
-
-//cria uma instância de SaleListingDto a partir da Sale.

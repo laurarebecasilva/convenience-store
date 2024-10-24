@@ -6,17 +6,21 @@ import com.api.rest.conveniencestore.dto.UserUpdateDto;
 import com.api.rest.conveniencestore.enums.Roles;
 import com.api.rest.conveniencestore.enums.Status;
 import com.api.rest.conveniencestore.exceptions.UserNotFoundException;
-import com.api.rest.conveniencestore.exceptions.UserNotValidPassword;
+import com.api.rest.conveniencestore.exceptions.PasswordValidateException;
+import com.api.rest.conveniencestore.exceptions.UsernameValidateException;
 import com.api.rest.conveniencestore.model.User;
 import com.api.rest.conveniencestore.repository.UserRepository;
+import com.api.rest.conveniencestore.utils.MessageConstants;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service //Serviço spring - gestão durante a execução.
+@Service
 public class UserService {
 
     @Autowired
@@ -37,31 +41,30 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    //private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Transactional
     public User registerUser(UserDto userDto) {
-        String encryptedPassword = passwordEncoder.encode(userDto.password()); // Criptografa a senha antes de criar o usuário
-        //log.debug("Senha criptografada: " + encryptedPassword);
-        User user = new User(userDto);  // Cria o objeto User com a senha já criptografada
+        String encryptedPassword = passwordEncoder.encode(userDto.password());
+        log.debug("Senha criptografada: " + encryptedPassword);
+        User user = new User(userDto);
         user.setPassword(encryptedPassword);
-        return userRepository.save(user); // Salva o usuário no banco de dados
+        return userRepository.save(user);
     }
 
-    //lista usuarios ativos
     public List<UserListingDto> listUsers() {
         return userRepository.findByStatus(Status.ACTIVE)
                 .stream()
                 .map(UserListingDto::new)
-                .collect(Collectors.toList()); //retorna a lista de usuários que foi convertida por meio do stream, agora lista os dados sem comprometer os dados sensiveis.
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public User updateUser(Long id, UserUpdateDto userUpdateDto) throws UserNotFoundException, UserNotValidPassword {
+    public User updateUser(Long id, UserUpdateDto userUpdateDto) throws UserNotFoundException, PasswordValidateException, UsernameValidateException {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
-        user.updateData(userUpdateDto, passwordEncoder); //atualiza senha e outros dados
-        return userRepository.save(user);  // Salva o usuário atualizado no banco
+                .orElseThrow(() -> new UserNotFoundException(String.format(MessageConstants.USER_NOT_FOUND, id)));
+        user.updateData(userUpdateDto, passwordEncoder);
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -70,7 +73,6 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    //atraves deste metodo, eu consigo inativar o usuario ativo, sem precisar exclui-lo.
     @Transactional
     public User statusUserInactive(Long id, Status status) {
         User user = userRepository.getReferenceById(id);

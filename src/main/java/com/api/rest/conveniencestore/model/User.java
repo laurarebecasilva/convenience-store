@@ -4,13 +4,13 @@ import com.api.rest.conveniencestore.dto.UserDto;
 import com.api.rest.conveniencestore.dto.UserUpdateDto;
 import com.api.rest.conveniencestore.enums.Roles;
 import com.api.rest.conveniencestore.enums.Status;
-
-import com.api.rest.conveniencestore.exceptions.UserNotValidPassword;
+import com.api.rest.conveniencestore.exceptions.PasswordValidateException;
+import com.api.rest.conveniencestore.exceptions.UsernameValidateException;
+import com.api.rest.conveniencestore.validations.PasswordValidator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.Collections;
 @Entity(name = "User")
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")//gera um equalshashcode apenas no atributo id
+@EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
 
     @Id
@@ -33,15 +33,12 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true)
-    //@NotBlank(message = "Username cannot be blank")
-    //@Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
     @JsonIgnore
     @Column(unique = true)
-    @NotBlank(message = "Password cannot be blank") // ^înicio da string, lockhead (?=.*[0-9]) verifica se há pelo menos um digito em toda string
-    //@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$", message = "Password must be at least 8 characters long and include both letters and numbers")
-    private String password; //.* qualquer caractere em qualquer posição. $ fim da string
+    @NotBlank(message = "Password cannot be blank")
+    private String password;
 
     @JsonIgnore
     @Column(unique = true)
@@ -54,7 +51,6 @@ public class User implements UserDetails {
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    @JsonIgnore
     private Roles role;
 
     public User(UserDto data) {
@@ -65,24 +61,13 @@ public class User implements UserDetails {
         this.role = Roles.USER;
     }
 
-    public void updateData(UserUpdateDto userUpdateDto, PasswordEncoder passwordEncoder) throws UserNotValidPassword {
+    public void updateData(UserUpdateDto userUpdateDto, PasswordEncoder passwordEncoder) throws PasswordValidateException, UsernameValidateException {
         if (userUpdateDto.username() != null) {
             this.username = userUpdateDto.username();
         }
-        if (userUpdateDto.password() != null && !userUpdateDto.password().isBlank()) {
-            validatePassword(userUpdateDto.password());  // Validação centralizada da senha
+            PasswordValidator.validatePassword(userUpdateDto.password());
             String encryptedPassword = passwordEncoder.encode(userUpdateDto.password());
-            this.password = encryptedPassword;  // Atualiza a senha criptografada.
-        }
-    }
-
-    private void validatePassword(String password) throws UserNotValidPassword {
-        if (password.length() < 8) {
-            throw new UserNotValidPassword("A senha deve ter pelo menos 8 caracteres.");
-        }
-        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
-            throw new UserNotValidPassword("A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.");
-        }
+            this.password = encryptedPassword;
     }
 
     public void setStatus(Status status) { //setter status
@@ -100,7 +85,30 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return Collections.singletonList(() -> "ROLE: " + this.role);
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
     }
 }

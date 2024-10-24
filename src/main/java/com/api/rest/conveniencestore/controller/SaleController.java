@@ -3,11 +3,14 @@ package com.api.rest.conveniencestore.controller;
 import com.api.rest.conveniencestore.dto.SaleDto;
 import com.api.rest.conveniencestore.dto.SaleListingDto;
 import com.api.rest.conveniencestore.enums.PaymentMethod;
+import com.api.rest.conveniencestore.enums.Status;
 import com.api.rest.conveniencestore.exceptions.*;
 import com.api.rest.conveniencestore.model.Client;
 import com.api.rest.conveniencestore.model.Sale;
 import com.api.rest.conveniencestore.repository.SaleRepository;
+import com.api.rest.conveniencestore.service.SaleHelper;
 import com.api.rest.conveniencestore.service.SaleService;
+import com.api.rest.conveniencestore.utils.MessageConstants;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("sales")
@@ -29,59 +33,48 @@ public class SaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Sale> register(@Valid @RequestBody SaleDto saleDto, Client client) throws ProductNotFoundException, ProductInactiveException, ProductInsufficientStockException, SaleNotValidPaymentMethodException, ClientCpfNotFoundException {
+    public ResponseEntity<Sale> register(@Valid @RequestBody SaleDto saleDto, Client client, SaleHelper saleHelper) throws ProductNotFoundException, ProductInactiveException, ProductInsufficientStockException, SaleNotValidPaymentMethodException, CpfValidateException {
         Sale savedSale = saleService.registerSale(saleDto, client);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSale);
     }
 
     @GetMapping
     public ResponseEntity<List<SaleListingDto>> listSalesByPaymentMethod(@Valid @RequestParam String paymentMethod) throws SaleListingNullException {
-        // Verifica se a string paymentMethod é nula ou está vazia
         if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
-            throw new SaleListingNullException("O método de pagamento não pode ser vazio.");
+            throw new SaleListingNullException(MessageConstants.PAYMENT_METHOD_EMPTY);
         }
-
         PaymentMethod payment;
         try {
-            // Tenta converter a string para o enum PaymentMethod
             payment = PaymentMethod.valueOf(paymentMethod.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // se o tipo de pagamento não for válido
-            throw new SaleListingNullException("Método de pagamento inválido: " + paymentMethod);
+            throw new SaleListingNullException(MessageConstants.INVALID_PAYMENT_METHOD + paymentMethod);
         }
-        // Busca as vendas pelo método de pagamento
         List<SaleListingDto> sales = saleService.listSalesByPaymentMethod(payment);
-        // Retorna a lista de vendas
         return ResponseEntity.ok(sales);
     }
-/*
+
+
     @PatchMapping("/{id}/status")
     @Transactional
-    public ResponseEntity<Sale> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest, SaleService saleService) throws SaleInvalidStatusException, SaleListingNullException {
+    public ResponseEntity<Sale> status(@Valid @PathVariable Long id, @RequestBody Map<String, String> statusRequest) throws SaleInvalidStatusException, SaleListingNullException {
         String statusString = statusRequest.get("status");
         Status statusCanceled;
-
-        // Verifica se o status fornecido é válido
         try {
-            statusCanceled = Status.fromValueStatus(statusString); // Converte a string para o enum Status
+            statusCanceled = Status.fromValueStatus(statusString);
         } catch (IllegalArgumentException e) {
-            throw new SaleInvalidStatusException("Status inválido: " + statusString);
+            throw new SaleInvalidStatusException(MessageConstants.INVALID_STATUS + statusString);
         }
 
-        // Verifica se o status é INACTIVE
         if (!Status.CANCELLED.equals(statusCanceled)) {
-            throw new SaleInvalidStatusException("O status só pode ser alterado para CANCELLED.");
+            throw new SaleInvalidStatusException(MessageConstants.STATUS_CANCELLED);
         }
 
-        // Verifica se a venda com o ID fornecido existe
-        if (!saleRepository.existsById(id)) {  // Use o SaleRepository aqui
-            throw new SaleListingNullException("Produto com ID: " + id + " não foi encontrado.");
+        if (!saleService.existsById(id)) {
+            throw new SaleListingNullException(MessageConstants.SALE_NOT_FOUND);
         }
 
-        // Altera o status da venda
-        Sale updatedStatusSale = saleService.statusSale(id, statusCanceled);
+        Sale updatedStatusSale = saleService.statusSaleCanceled(id, statusCanceled);
         return ResponseEntity.ok(updatedStatusSale);
     }
- */
 }
 
