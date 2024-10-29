@@ -61,6 +61,9 @@ public class User implements UserDetails {
         this.role = Roles.USER;
     }
 
+    public User(UserUpdateDto userUpdateDto) {
+    }
+
     public void updateData(UserUpdateDto userUpdateDto, PasswordEncoder passwordEncoder) throws PasswordValidateException, UsernameValidateException {
         if (userUpdateDto.username() != null) {
             this.username = userUpdateDto.username();
@@ -110,5 +113,8 @@ public class User implements UserDetails {
     @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
+    }
+
+    public void setId(Long userId) {
     }
 }

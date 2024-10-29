@@ -14,9 +14,9 @@ public class UserValidator {
     private static final String ERROR_PATTERN_USERNAME = "O username deve começar com uma letra, pode conter até 3 números e não deve incluir caracteres especiais ou espaços.";
     private static final String USERNAME_ALREADY_REGISTERED = "Usuário já cadastrado com o nome: ";
     private static final String REGEX_NAME_CUSTOMER = "^[a-zA-Z]{3,}$";
-    public static final String CUSTOMER_ALREADY_REGISTERED = "Cliente com o nome já está cadastrado: ";
-    public static final String USERNAME_CANNOT_BE_EMPTY = "O username não pode ser vazio.";
-    public static final String CUSTOMER_NAME_CANNOT_BE_EMPTY = "O nome do cliente não pode ser vazio.";
+    private static final String CUSTOMER_ALREADY_REGISTERED = "Cliente com o nome já está cadastrado: ";
+    private static final String USERNAME_CANNOT_BE_EMPTY = "O username não pode ser vazio.";
+    private static final String CUSTOMER_NAME_CANNOT_BE_EMPTY = "O nome do cliente não pode ser vazio.";
     private static final String ERROR_PATTERN_NAME = "O nome deve conter apenas letras, com minimo três caracteres.";
 
 
