@@ -7,7 +7,11 @@ public enum Status {
     INACTIVE,
     REGISTERED,
     APPROVED,
-    CANCELLED;
+    CANCELLED,
+    EXPIRED,
+    NEAR_EXPIRATION,
+    AVAILABLE,
+    LOW_STOCK;
 
     @JsonCreator
     public static Status fromValueStatus(String value) {
