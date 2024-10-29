@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Table(name = "products")
@@ -68,6 +67,20 @@ public class Product implements StatusUtil {
         }
         if (updateDto.status() != null) {
             this.status = updateDto.status();
+        }
+    }
+
+    public void updateStatusBasedOnExpiration() {
+        if (expirationDate != null) {
+            LocalDate today = LocalDate.now();
+
+            if (expirationDate.isBefore(today)) {
+                this.status = Status.EXPIRED; // Produto já expirado
+            } else if (expirationDate.isEqual(today) || expirationDate.isBefore(today.plusDays(7))) {
+                this.status = Status.NEAR_EXPIRATION; // Produto próximo do vencimento
+            } else {
+                this.status = Status.AVAILABLE; // Produto disponível e dentro da validade
+            }
         }
     }
 
