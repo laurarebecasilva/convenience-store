@@ -66,8 +66,21 @@ public class SaleService {
 
             Product product;
             product = saleHelper.validationProduct(productId, quantity);
-            product.setStockQuantity(product.getStockQuantity() - quantity);
-            productRepository.save(product);
+
+            // Atualiza o status do produto com base na data de vencimento
+            product.updateStatusBasedOnExpiration();
+
+
+            if (product.getStatus() == Status.NEAR_EXPIRATION) {
+                throw new ProductInactiveException(" Produto proximo do vencimento. " + " Quantidade: " + product.getStockQuantity() + " Data de validade: " + product.getExpirationDate());
+            }
+            if (product.getStatus() == Status.EXPIRED) {
+                throw new ProductInactiveException("Produto expirado não pode ser vendido. " + " Quantidade: " + product.getStockQuantity() + " Data de validade: " + product.getExpirationDate());
+            }
+            if (product.getStatus() == Status.AVAILABLE) {
+                product.setStockQuantity(product.getStockQuantity() - quantity);
+                productRepository.save(product);
+            }
         }
         return saleRepository.save(sale);
     }
